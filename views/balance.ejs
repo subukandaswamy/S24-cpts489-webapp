@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<% if (balance >= 1000000) {%>
+    <h3> The user: <%= name%></h3>
+    <h3> The Balance: <%= balance%></h3>
+<% } else {%>
+<h3> Go stand in the other line. your balance is just <%= balance%></h3>
+<%}%>
+<label for="choices"></label>
+<select name="choices" id="choices">
+<% for(let i=0; i< data.length; i++) {%>
+<option value="<%=data[i]%>"><%=data[i]%></option>
+<%}%>
+</select>
+</body>
+</html>

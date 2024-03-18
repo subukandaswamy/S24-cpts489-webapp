@@ -2,12 +2,17 @@ const express = require("express");
 const { currentTime } = require("./time");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const secureRouter = require("./secureRouter");
+const path = require("path");
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static("static"));
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 app.set("trust proxy", 1); // trust first proxy
 app.use(
@@ -49,21 +54,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-function validateSecureUser(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    res.redirect("/index.html");
-  }
-}
-
-app.use("/secure", validateSecureUser);
-
-app.get("/secure/balance", (req, res) => {
-  //console.log(req.session.user);
-  const { name, balance } = req.session.user;
-  res.send(`<h1>${name} your balance is ${balance} dollars</h1>`);
-});
+app.use("/secure", secureRouter);
 
 app.listen(3000, () => {
   console.log("server started in port 3000");
