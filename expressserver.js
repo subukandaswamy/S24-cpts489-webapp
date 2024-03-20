@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const secureRouter = require("./secureRouter");
 const path = require("path");
+const runQuery = require("./db");
 
 const app = express();
 
@@ -28,30 +29,45 @@ app.get("/time.dy", (req, res) => {
   res.send(currentTime());
 });
 
-function validateUser(username, password) {
+function validateUser(username, password, sCallback, fCallback) {
   console.log(username, password);
-  // I am looking up the database
-  if (username === "subu" && password === "1234") {
-    return {
-      name: "subu",
-      balance: 1000,
-    };
-  } else {
-    return null;
-  }
+  const queryString = "SELECT * FROM USER WHERE name=? AND password=?";
+  const values = [username, password];
+  runQuery(queryString, values, function (err, res) {
+    console.log(err);
+    console.log(res);
+    if (err) {
+      throw err;
+    }
+    if (res.length > 0) {
+      sCallback(res[0]);
+    } else {
+      fCallback();
+    }
+  });
 }
 
 app.post("/login", (req, res) => {
   console.log(req.body);
   const { username, password } = req.body;
-  const user = validateUser(username, password);
-  //console.log(user);
-  if (user) {
-    req.session.user = user;
+  const sCallback = function (row) {
+    req.session.user = {
+      name: row.name,
+      balance: row.balance,
+    };
     res.redirect("/home.html");
-  } else {
+  };
+  const fCallback = function () {
     res.redirect("/fail.html");
-  }
+  };
+  validateUser(username, password, sCallback, fCallback);
+  //console.log(user);
+  // if (user) {
+  //   req.session.user = user;
+  //   res.redirect("/home.html");
+  // } else {
+  //   res.redirect("/fail.html");
+  // }
 });
 
 app.use("/secure", secureRouter);

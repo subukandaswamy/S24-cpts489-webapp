@@ -1,0 +1,9 @@
+1. INST1
+2. INST2
+3. CREAT VAR X
+4. INSTR3 (callback)
+    5. INSTR (use x)
+    6. INSTR 6
+    7. INSTR 7 (Async)
+        8. INSTR 8
+        9. INSTR 9
